@@ -14,8 +14,11 @@ bot=telebot.TeleBot(token)
 def start_message(message):
     mess = f'здарова {message.from_user.first_name}'
     bot.send_message(message.chat.id, mess)
-    bot.send_message(message.chat.id, mess, parse_mode='html')
 ###***/
+
+@bot.message_handler()
+def get_user_text(message):
+    bot.send_message(message.chat.id, message)
 
 #@bot.message_handler(commands=['button'])
 ###/*
