@@ -17,13 +17,17 @@ scope = ['https://spreadsheets.google.com/feeds',
         'https://www.googleapis.com/auth/spreadsheets'
         ]
 
-credentials = ServiceAccountCredentials('testparty@testparty-358919.iam.gserviceaccount.com', signer=object(), sub='ca4stdu@gmail.com')
-#.from_json_keyfile_name('client_secret_384105189394-s2difi5q9odgp3m9rp7pphe6mqu709pl.apps.googleusercontent.com.json', scope)
+#credentials = ServiceAccountCredentials.from_srvice_account_file('tlgbot_384105189394-cko9q4e2dheckovj50slhd0nf2orsogs.apps.googleusercontent.com.json', scope)
+#('testparty@testparty-358919.iam.gserviceaccount.com', signer=object(), sub='ca4stdu@gmail.com')
+
+client = gspread.service_account(filename='testparty-358919-78887ea17d5d.json')
 
 #client = gspread.authorize(credentials)
 ### https://docs.google.com/spreadsheets/d/17gq_vjzhdFWgbinfoHU6KIK2aTWD9d9fuuzlYJo4148/edit?usp=drivesdk
 workbook_key = '17gq_vjzhdFWgbinfoHU6KIK2aTWD9d9fuuzlYJo4148'
 sheet_name = 'message_log'
+
+gsheet = client.open_by_key(workbook_key)
 
 #wks = client.open_by_key(workbook_key)
 ###*/ init gspread
@@ -46,11 +50,10 @@ def get_user_text(message):
 #    item1=types.KeyboardButton("Кнопка")
 #    markup.add(item1)
 #    bot.send_message(message.chat.id,'Выберите что вам надо',reply_markup=markup)
-###*/    
+###*/
 #@bot.message_handler(content_types='text')
 #def message_reply(message):
 #    if message.text=="Кнопка":
 #        bot.send_message(message.chat.id,"https://habr.com/ru/users/lubaznatel/")
 
 bot.infinity_polling()
-
