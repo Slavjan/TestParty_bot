@@ -7,6 +7,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 import gspread
 import json
+import pandas as pd
 
 token='5458673070:AAFfRWx8DdfK-z4M-z5Bj_GKBN6WxGZOWqA'
 ### /* init gspread
@@ -27,10 +28,18 @@ client = gspread.service_account(filename='testparty-358919-78887ea17d5d.json')
 workbook_key = '17gq_vjzhdFWgbinfoHU6KIK2aTWD9d9fuuzlYJo4148'
 sheet_name = 'message_log'
 
-gsheet = client.open_by_key(workbook_key)
+gworkbook = client.open_by_key(workbook_key)
 
-#wks = client.open_by_key(workbook_key)
+gwksheet = gworkbook.worksheet(sheet_name);
 ###*/ init gspread
+
+###/* use wks
+
+values = gwksheet.get_all_values()
+columns = values.pop(0)
+df = pd.DataFrame(values, columns=columns)
+
+###*/ use wks
 
 bot=telebot.TeleBot(token)
 @bot.message_handler(commands=['start'])
@@ -41,7 +50,7 @@ def start_message(message):
 
 @bot.message_handler()
 def get_user_text(message):
-    bot.send_message(message.chat.id, message)
+    bot.send_message(message.chat.id, mess)
 
 #@bot.message_handler(commands=['button'])
 ###/*
