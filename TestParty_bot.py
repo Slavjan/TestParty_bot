@@ -1,5 +1,6 @@
 import telebot
-#from telebot import types
+#import types
+from telebot import types
 #google api
 import httplib2
 import apiclient.discovery
@@ -68,17 +69,45 @@ def message_record(message):
         'tlg_uname': [f'{message.from_user.first_name}']
         })
     return record
+    
+#def makeMarkup_yesNo():
+#    pass
 
+#def makeInlineMarkup_keybord(keys= {'yes':['yes'], 'may be':['may be'], 'no':['no']}):
+#    markup = types.InlineKeyboardMarkup()
+#    #markup.row_width = 4
+#    #for key in keys:
+#    markup.add('yes')
+#    markup.add('no')
+#    return markup
+
+
+@bot.callback_query_handler(func= lambda call: call.data in ['yes', 'no'] )
+def message_answer_inline_yesNo(call):
+    try:
+        if call.message:
+            record = message_record(call.message)
+            if call.data == 'yes':
+                bot.send_message(call.message.chat.id, 'вот и хорошо' )
+            elif call.data == 'no':
+                bot.send_message(call.message.chat.id, 'жаль, если передумаешь — дай знать' )
+           
+    except Exception as e:
+        print(rep(e))
+    
 
 @bot.message_handler(commands =['start'])
 def start_message(message):
-    mess = f'здарова {message.from_user.first_name}'
+    mess = f'здарова {message.from_user.first_name}, \n ты идёшь на вечеринку?'
     record = message_record(message)
-    employeeTable.append_records(record.values.tolist())
     #print(record)
-    bot.send_message(message.chat.id, mess)
-
-
+    keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
+    buttYes = types.InlineKeyboardButton("Да", callback_data='yes')
+    buttNo = types.InlineKeyboardButton("Нет", callback_data='no')
+    keyboard.add(buttYes, buttNo)
+    bot.send_message(message.chat.id, mess, reply_markup=keyboard)
+    
+    
 
 @bot.message_handler()
 def get_user_text(message) :
@@ -88,18 +117,17 @@ def get_user_text(message) :
     #print(record)
     bot.send_message(message.chat.id, mess)
 
-#@ bot.message_handler(commands =['button'])## #/*
+#@bot.message_handler(commands =['button'])
 #def button_message(message):
 #    markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
 #    item1=types.KeyboardButton("Кнопка")
-#    markup.add(item1)
+#   markup.add(item1)
 #    bot.send_message(message.chat.id,'Выберите что вам надо',reply_markup=markup)
 ###*/
 
-#@ bot.message_handler(content_types = 'text')
+#@bot.message_handler(content_types = 'text')
 #def message_reply(message):
 #if message.text == "Кнопка":
 #bot.send_message(message.chat.id, "https://habr.com/ru/users/lubaznatel/")
 
 bot.infinity_polling()
-
