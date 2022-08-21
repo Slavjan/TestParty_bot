@@ -8,7 +8,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 import gspread
 import json
 import pandas as pd
-
+import gspread_dataframe as gd
 import regexp as re
 
 token = '5458673070:AAFfRWx8DdfK-z4M-z5Bj_GKBN6WxGZOWqA'
@@ -42,8 +42,9 @@ class WorksheetTable:
         return self.recordsCount
 
     def find_cell_by_value(self, searchFieldBy, value):
-        listOfRows = self.gWorksheet.findall('XanRin')
-        print(f'find id: {value} in row {listOfRows}')
+        allValues = self.gWorksheet.get_all_values()
+        dfvalues = gd.get_as_dataframe(self.gWorksheet)
+        #print(f'find id: {value} in row {dfvalues.tolist}')
 
     def get_data_from_record(searchFieldBy, byValue, fromField ):
         values = self.gWorksheet.get_values()
@@ -156,7 +157,7 @@ def start_message(message):
     buttYes = types.InlineKeyboardButton("Да", callback_data='yes')
     buttNo = types.InlineKeyboardButton("Нет", callback_data='no')
     keyboard.add(buttYes, buttNo)
-    botmess = bot.send_message(message.chat.id, mess, reply_markup=keyboard)
+    botmess = bot.send_message(message.chat.id, mess)
     record = message_record(botmess)
     messageLog_table.append_records(record.values.tolist())
 
@@ -174,6 +175,34 @@ def get_user_text(message):
     botmess = bot.send_message(message.chat.id, mess)
     record = message_record(botmess)
     messageLog_table.append_records(record.values.tolist())
+    
+@bot.message_handler(commands=['hist'])
+def hist_message(message):
+    bot.send_message(message.chst.id, 'send me file')
+    bot.set_handler_next_step(message, message_doc_repost)
+    
+    
+@bot.message_handler(content_types=['document'])
+def message_doc_repost(message):
+    file_info = bot.get_file(message.document.file_id)
+    downloaded_file = bot.download_file(file_info.file_path)
+    with open('tmp.txt', 'wb') as fo:
+       fo.write(downloaded_file)
+       
+    with open('tmp.txt', 'r') as fi:
+       [
+       bot.send_message(message.chat.id, mess)
+       for mess in fi.readlines()
+       ]
+       fo.close()
+       fi.close()
+       
+       
+       
+   # print(downloaded_file)
+    #with open(file, )
+  #  [print(f) for f in file] 
+    
 
 #@bot.message_handler(content_types= ['text'])
 
@@ -192,4 +221,3 @@ def get_user_text(message):
 #bot.send_message(message.chat.id, "https://habr.com/ru/users/lubaznatel/")
 
 bot.infinity_polling()
-
